@@ -1,0 +1,10 @@
+# enviroment folder
+.env
+.py311env
+__pycache__
+
+#py compiled files
+*.pyc
+
+#local
+settings_local.py
