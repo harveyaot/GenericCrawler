@@ -9,14 +9,11 @@ from scrapy.loader import ItemLoader
 from ..items import OpinionNewsItem
 
 class NewsWeekSpider(scrapy.Spider):
-    name = "newsweek"
-
-    def start_requests(self):
-        urls = [
-            'https://newsweek.com/opinion',
-        ]
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+    name = "foreignpolicy"
+    allowed_domains = ['foreignpolicy.com']
+    start_urls = [
+        'https://foreignpolicy.com/channel/analysis/',
+    ]
 
     def parse(self, response):
         now = datetime.datetime.now()
@@ -42,6 +39,7 @@ class NewsWeekSpider(scrapy.Spider):
                                   url=url, 
                                   thumbnail=thumbnail, 
                                   author=author,
+                                  source=self.name,
                                   crawlDate=nowTS)
             #yield {"title": title, 
             #       "summary": summary, 
