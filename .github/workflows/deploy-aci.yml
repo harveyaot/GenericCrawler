@@ -48,6 +48,7 @@ jobs:
         dns-name-label: ${{ env.AzureInstanceName }}
         cpu: 1   #Optional
         memory: 0.5   #Optional
+        restart-policy: OnFailure
         registry-username: ${{ secrets.ACR_USERNAME }}
         registry-password: ${{ secrets.ACR_PASSWORD }}
         name: opinion-news-crawler
