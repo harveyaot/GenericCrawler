@@ -6,7 +6,7 @@ on:
 
 env:
   DockerImageName: opinion_news_crawler
-  AzureInstanceName: opinion_news_crawler
+  AzureInstanceName: opinion-news-crawler
   
 jobs:
   build:
@@ -25,13 +25,8 @@ jobs:
       with:
         registry: ${{ secrets.ACR_ENDPOINT }}
         username: ${{ secrets.ACR_USERNAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
-        
-    - name: Login via Azure CLI
-      uses: azure/login@v1
-      with:
-        creds: '{"clientId":"${{ secrets.CLIENT_ID }}","clientSecret":"${{ secrets.CLIENT_SECRET }}","subscriptionId":"${{ secrets.SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TENANT_ID }}"}'
-        
+        password: ${{ secrets.ACR_PASSWORD }}    
+       
     - name: Build & Push ACR
       uses: docker/build-push-action@v2
       with:
@@ -39,6 +34,11 @@ jobs:
         build-args: |
           version=${{ steps.tag.outputs.tag }}
         tags: ${{ secrets.ACR_ENDPOINT }}/${{ env.DockerImageName }}:${{ steps.tag.outputs.tag }}
+     
+    - name: Login via Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: '{"clientId":"${{ secrets.CLIENT_ID }}","clientSecret":"${{ secrets.CLIENT_SECRET }}","subscriptionId":"${{ secrets.SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TENANT_ID }}"}'
     
     - name: 'Deploy to Azure Container Instances'
       uses: 'azure/aci-deploy@v1'
