@@ -43,7 +43,6 @@ jobs:
       uses: 'azure/aci-deploy@v1'
       with:
         resource-group: Crawler
-        dns-name-label: url-for-container
         image: ${{ secrets.ACR_ENDPOINT }}/${{ env.DockerImageName }}:${{ steps.tag.outputs.tag }}
         cpu: 1   #Optional
         memory: 0.1   #Optional
@@ -51,4 +50,4 @@ jobs:
         registry-password: ${{ secrets.ACR_PASSWORD }}
         name: opinion-news-crawler
         secure-environment-variables: MONGO_URI=${{ secrets.MONGO_URI }} MONGO_DATABASE=${{ secrets.MONGO_DATABASE }}
-        location: 'west us'
+        location: 'west us 2'
