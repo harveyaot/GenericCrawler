@@ -45,7 +45,7 @@ jobs:
         resource-group: Crawler
         image: ${{ secrets.ACR_ENDPOINT }}/${{ env.DockerImageName }}:${{ steps.tag.outputs.tag }}
         cpu: 1   #Optional
-        memory: 0.1   #Optional
+        memory: 0.5   #Optional
         registry-username: ${{ secrets.ACR_USERNAME }}
         registry-password: ${{ secrets.ACR_PASSWORD }}
         name: opinion-news-crawler
