@@ -1,0 +1,56 @@
+name: build docker and deploy to azure container instance
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+env:
+  DockerImageName: opinion_news_crawler
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: check repository
+      uses: actions/checkout@v3
+      
+    - name: Get tag
+      id: tag
+      uses: dawidd6/action-get-tag@v1.1.0
+      with:
+        creds: ${{ secrets. }}
+      
+    - name: Log into registry
+      uses: docker/login-action@v2.1.0
+      with:
+        registry: ${{ secrets.ACR_ENDPOINT }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+        
+    - name: Login via Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_SP_SECRETS }}
+        
+    - name: Build & Push ACR
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        build-args: |
+          version=${{ steps.tag.outputs.tag }}
+        tags: ${{ secrets.ACR_ENDPOINT }}/${{ env.DockerImageName }}:${{ steps.tag.outputs.tag }}
+    
+    - name: 'Deploy to Azure Container Instances'
+      uses: 'azure/aci-deploy@v1'
+      with:
+        resource-group: Crawler
+        dns-name-label: url-for-container
+        image: ${{ secrets.ACR_ENDPOINT }}/${{ env.DockerImageName }}:${{ steps.tag.outputs.tag }}
+        cpu: 1   #Optional
+        memory: 0.1   #Optional
+        registry-username: ${{ secrets.ACR_USERNAME }}
+        registry-password: ${{ secrets.ACR_PASSWORD }}
+        name: opinion-news-crawler
+        secure-environment-variables: MONGO_URI=${{ secrets.MONGO_URI }} MONGO_DATABASE=${{ secrets.MONGO_DATABASE }}
+        location: 'west us'
