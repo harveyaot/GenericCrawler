@@ -6,6 +6,7 @@ on:
 
 env:
   DockerImageName: opinion_news_crawler
+  AzureInstanceName: opinion_news_crawler
   
 jobs:
   build:
@@ -44,6 +45,7 @@ jobs:
       with:
         resource-group: Crawler
         image: ${{ secrets.ACR_ENDPOINT }}/${{ env.DockerImageName }}:${{ steps.tag.outputs.tag }}
+        dns-name-label: ${{ env.AzureInstanceName }}
         cpu: 1   #Optional
         memory: 0.5   #Optional
         registry-username: ${{ secrets.ACR_USERNAME }}
