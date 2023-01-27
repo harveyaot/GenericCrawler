@@ -18,8 +18,6 @@ jobs:
     - name: Get tag
       id: tag
       uses: dawidd6/action-get-tag@v1.1.0
-      with:
-        creds: ${{ secrets. }}
       
     - name: Log into registry
       uses: docker/login-action@v2.1.0
