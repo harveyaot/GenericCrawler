@@ -1,12 +1,8 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ "main" ]
     tags: ['v*.*.*']
-  pull_request:
-    branches: [ "main" ]
-    tags: ['v*.*.*']
+
 env:
   DockerImageName: opinion_news_crawler
   
@@ -32,4 +28,4 @@ jobs:
           push: true
           build-args: |
             version=${{ steps.tag.outputs.tag }}
-          tags: ${{ secrets.ACR_ENDPOINT }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+          tags: ${{ secrets.ACR_ENDPOINT }}/${{ env.DockerImageName }}:${{ steps.tag.outputs.tag }}
