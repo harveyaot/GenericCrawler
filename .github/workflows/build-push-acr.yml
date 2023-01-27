@@ -11,9 +11,7 @@ env:
   DockerImageName: opinion_news_crawler
   
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
