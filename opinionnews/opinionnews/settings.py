@@ -6,14 +6,15 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import os
 
 BOT_NAME = 'opinionnews'
 
 SPIDER_MODULES = ['opinionnews.spiders']
 NEWSPIDER_MODULE = 'opinionnews.spiders'
 
-MONGO_URI = ""
-MONGO_DATABASE = "dev"
+MONGO_URI = os.getenv('MONGO_URI')
+MONGO_DATABASE = os.getenv('MONGO_DATABASE')
 
 
 

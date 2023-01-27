@@ -1,0 +1,1 @@
+docker run --rm  --env-file env.list opinion_news:latest
