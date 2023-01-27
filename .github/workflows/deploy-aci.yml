@@ -29,7 +29,7 @@ jobs:
     - name: Login via Azure CLI
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_SP_SECRETS }}
+        creds: '{"clientId":"${{ secrets.CLIENT_ID }}","clientSecret":"${{ secrets.CLIENT_SECRET }}","subscriptionId":"${{ secrets.SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TENANT_ID }}"}'
         
     - name: Build & Push ACR
       uses: docker/build-push-action@v2
