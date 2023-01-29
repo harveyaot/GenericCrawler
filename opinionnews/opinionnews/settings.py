@@ -15,6 +15,9 @@ NEWSPIDER_MODULE = 'opinionnews.spiders'
 
 MONGO_URI = os.getenv('MONGO_URI')
 MONGO_DATABASE = os.getenv('MONGO_DATABASE')
+MONGO_COLLECTION_NAME = os.getenv('MONGO_COLLECTION_NAME')
+CMS_API_TOKEN = os.getenv('CMS_API_TOKEN')
+CMS_API = os.getenv('CMS_API')
 
 
 
@@ -71,6 +74,7 @@ DEFAULT_REQUEST_HEADERS = {
 ITEM_PIPELINES = {
     'opinionnews.pipelines.OpinionnewsFilterPipeline': 300,
     'opinionnews.pipelines.OpinionNewsMongoPipeline': 400,
+    'opinionnews.pipelines.OpinionNewsCMSPipeline': 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

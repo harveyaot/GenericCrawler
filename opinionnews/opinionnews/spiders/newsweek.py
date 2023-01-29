@@ -34,13 +34,13 @@ class NewsWeekSpider(scrapy.Spider):
             l.add_xpath('thumbnail', './/div[contains(@class, "image")]//picture/source/@data-srcset')
             l.add_xpath('author', './/div[contains(@class, "byline")]/text()')
             """
-            yield OpinionNewsItem(title=title, 
-                                  summary=summary, 
-                                  url=url, 
-                                  thumbnail=thumbnail, 
-                                  author=author,
-                                  source=self.name,
-                                  crawlDate=nowTS)
+            yield OpinionNewsItem(title = title, 
+                                  summary = summary, 
+                                  url = "https://www.newsweek.com" + url, 
+                                  thumbnail = thumbnail.split(' ')[0], # hack 
+                                  author = author,
+                                  source = self.name,
+                                  updateDate = nowTS)
             #yield {"title": title, 
             #       "summary": summary, 
             #       "url": url, 
@@ -48,5 +48,4 @@ class NewsWeekSpider(scrapy.Spider):
             #       "author": author, 
             #       "crawlDate": nowTS}
             #item = l.load_item()
-            #item.crawlDate = nowTS
-            #yield item
+            #item.crawlDate = nowTS #yield item

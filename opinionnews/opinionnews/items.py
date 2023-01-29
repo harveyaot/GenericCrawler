@@ -14,10 +14,14 @@ class OpinionNewsItem(scrapy.Item):
     summary = scrapy.Field()
     source = scrapy.Field()
     url = scrapy.Field()
-    crawlDate = scrapy.Field(serializer=int) 
-
-    publishDate = scrapy.Field()
+    docid = scrapy.Field()
     text = scrapy.Field()
+    
+    updateDate = scrapy.Field(serializer=int) 
+    publishDate = scrapy.Field()
+    
+    # only for passing signals usage
+    need_update = scrapy.Field()
     """
     title: str
     thumbnail: str
