@@ -52,5 +52,5 @@ jobs:
         registry-username: ${{ secrets.ACR_USERNAME }}
         registry-password: ${{ secrets.ACR_PASSWORD }}
         name: opinion-news-crawler
-        secure-environment-variables: MONGO_URI=${{ secrets.MONGO_URI }} MONGO_DATABASE=${{ secrets.MONGO_DATABASE }}
+        secure-environment-variables: MONGO_URI=${{ secrets.MONGO_URI }} MONGO_DATABASE=${{ secrets.MONGO_DATABASE }} MONGO_COLLECTION_NAME=${{ vars.MONGO_COLLECTION_NAME }} CMS_API_TOKEN=${{ secrets.CMS_API_TOKEN}} CMS_API=${{ vars.CMS_API }}
         location: 'west us 2'
