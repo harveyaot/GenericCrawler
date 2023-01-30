@@ -22,6 +22,14 @@ class NewsWeekSpider(scrapy.Spider):
         
         for article in response.xpath('//article'):
             title = article.xpath('.//h3/a/text()').get()
+            # try another xpath if the first one fails
+            if title is None:
+                title = article.xpath('.//h6/a/text()').get()
+            
+            if title is not None:
+                # replace the ending string "| Opinoin"
+                title = title.replace("| Opinion", "").strip()
+                    
             summary = article.xpath('.//div[contains(@class, "summary")]/text()').get()
             url = article.xpath('.//div[contains(@class, "image")]/a/@href').get()
             thumbnail = article.xpath('.//div[contains(@class, "image")]//picture/source/@data-srcset').get()
