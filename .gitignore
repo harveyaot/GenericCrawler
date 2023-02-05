@@ -130,3 +130,6 @@ dmypy.json
 .pyre/
 settings_local.py
 env.list
+
+# test output
+test_output_*.json

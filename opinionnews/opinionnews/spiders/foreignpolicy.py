@@ -8,7 +8,7 @@ import datetime
 from scrapy.loader import ItemLoader
 from ..items import OpinionNewsItem
 
-class NewsWeekSpider(scrapy.Spider):
+class ForeignPolicySpider(scrapy.Spider):
     name = "foreignpolicy"
     allowed_domains = ['foreignpolicy.com']
     start_urls = [
@@ -17,15 +17,15 @@ class NewsWeekSpider(scrapy.Spider):
 
     def parse(self, response):
         now = datetime.datetime.now()
-        nowStr = now.strftime("%Y-%m-%d-%H")
         nowTS = int(now.timestamp())
         
-        for article in response.xpath('//article'):
-            title = article.xpath('.//h3/a/text()').get()
-            summary = article.xpath('.//div[contains(@class, "summary")]/text()').get()
-            url = article.xpath('.//div[contains(@class, "image")]/a/@href').get()
-            thumbnail = article.xpath('.//div[contains(@class, "image")]//picture/source/@data-srcset').get()
-            author = article.xpath('.//div[contains(@class, "byline")]/text()').get()
+        for article in response.xpath('//div[contains(@class, "content-block")]'):
+            title = article.xpath('.//h3/text()').get()
+            summary = article.xpath('.//p[contains(@class, "dek")]/text()').get()
+            url = article.xpath('.//div[contains(@class, "list-text")]/a/@href').get()
+            thumbnail = article.xpath('./figure/a/img/@data-src').get()
+            author = article.xpath('.//div[contains(@class, "list-text")]//address/a/text()').get()
+            authorLink = article.xpath('.//div[contains(@class, "list-text")]//address/a/@href').get()
             """
             l = ItemLoader(item=OpinionNewsItem(), response=response)
             l.add_xpath('title', './/h3/a/text()')
@@ -34,13 +34,14 @@ class NewsWeekSpider(scrapy.Spider):
             l.add_xpath('thumbnail', './/div[contains(@class, "image")]//picture/source/@data-srcset')
             l.add_xpath('author', './/div[contains(@class, "byline")]/text()')
             """
-            yield OpinionNewsItem(title=title, 
+            yield OpinionNewsItem(title=title.strip('\n '), 
                                   summary=summary, 
                                   url=url, 
                                   thumbnail=thumbnail, 
                                   author=author,
+                                  authorLink=authorLink,
                                   source=self.name,
-                                  crawlDate=nowTS)
+                                  updateDate=nowTS)
             #yield {"title": title, 
             #       "summary": summary, 
             #       "url": url, 
