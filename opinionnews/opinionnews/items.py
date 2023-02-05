@@ -11,6 +11,7 @@ class OpinionNewsItem(scrapy.Item):
     thumbnail = scrapy.Field()
     author = scrapy.Field()
     authorDesc = scrapy.Field()
+    authorLink = scrapy.Field()
     summary = scrapy.Field()
     source = scrapy.Field()
     url = scrapy.Field()

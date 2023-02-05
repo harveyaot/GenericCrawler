@@ -4,4 +4,4 @@ WORKDIR /app
 
 RUN pip install -r requirements.txt
 
-CMD cd opinionnews && scrapy crawl newsweek
+CMD cd opinionnews && python crawl.py
