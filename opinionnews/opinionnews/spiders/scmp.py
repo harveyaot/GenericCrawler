@@ -4,12 +4,13 @@
 # your spiders.
 import scrapy
 import datetime
+import json
 
 from scrapy.loader import ItemLoader
 from ..items import OpinionNewsItem
 
 class BloombergSpider(scrapy.Spider):
-    name = "bloomberg"
+    name = "scmp"
     base_url = "https://www.scmp.com"
     allowed_domains = ['scmp.com']
     start_urls = [
@@ -19,36 +20,66 @@ class BloombergSpider(scrapy.Spider):
     def parse(self, response):
         now = datetime.datetime.now()
         nowTS = int(now.timestamp())
-        
-        for article in response.xpath('//article[contains(@class, "story-list-story")]'):
+
+        # parse the script:
+        script = response.xpath('//script[contains(., "window.__APOLLO_STATE__=")]/text()').get()
+        print(script[:30])
+        with open("scmp.json", "w") as f:
+            f.write(script.replace("window.__APOLLO_STATE__=", ""))
+
+        d = json.loads(script.replace("window.__APOLLO_STATE__=", ""))
+
+        qs_opinions = []
+        if "contentService" in d:
+            for qs in d["contentService"].keys():
+                if "opinion" in qs:
+                    qs_opinions.append(qs)
+
+        for qs in qs_opinions:
+            val = d["contentService"][qs]
+            if val.get("__typename", None) != "Article":
+                continue
+
+            url = val.get("urlAlias", "")
+            title = val.get("headline", "")
+            subHeadline = val.get("socialHeadline", "")
+            updateDate = int(val.get("updatedDate",0) / 1000)
+            if updateDate == 0:
+                updateDate = nowTS
+                
+
+            # process image
+            image = ""
+            imgs = val.get("images", [])
+            if imgs:
+                id = imgs[0].get("id", None)
+                if id and id in d["contentService"]:
+                    image = d["contentService"][id]['url']
+                    
+            # process author
+            authors = val.get("authors", []) 
+            author, authorLink = "", ""
+            id = authors[0].get("id", None)
+            if id and id in d["contentService"]:
+                author = d["contentService"][id]['name']
+                authorLink = d["contentService"][id]['urlAlias']
+
+            #  process summary
             
-            title = article.xpath('.//div[contains(@class, "headline")]/a/text()').get()
-            summary = article.xpath('.//div[contains(@class, "summary")]/p/text()').get()
-            url = article.xpath('.//div[contains(@class, "headline")]/a/@href').get()
-            thumbnail = article.xpath('.//a[contains(@class, "image")]/img/@src').get()
-            author = article.xpath('.//span[contains(@class, "byline")]/text()').get()
-            """
-            article //div[contains(@class, "article-level")]
+            summary = val.get("summary", {})
+            ps = []
+            if "json" in summary:
+                for p in summary["json"]:
+                    if p["type"] == "p":
+                        ps.extend([c["data"] for c in p["children"]])
+            ps.insert(0, subHeadline)
+            summary = ". ".join(ps)
 
-url = response.xpath('//div[contains(@class, "article-level")]//div/a/@href').getall()
-            url = response.xpath('//article[contains(@class, "article-story")]/div[contains(@class, "thumbnail")]/a/@href').getall()
-thumbnail = response.xpath('//article[contains(@class, "article-story")]/div[contains(@class, "thumbnail")]//img/@src').getall()
-
-title = response.xpath('//article[contains(@class, "article-story")]/div[contains(@class, "details")]//p/text()').getall()
-            """
             yield OpinionNewsItem(title=title.strip('\n '), 
                                   summary=summary, 
                                   url=self.base_url + url, 
-                                  thumbnail=thumbnail, 
+                                  thumbnail=image, 
                                   author=author,
+                                  authorLink=authorLink,
                                   source=self.name,
-                                  updateDate=nowTS)
-            #yield {"title": title, 
-            #       "summary": summary, 
-            #       "url": url, 
-            #       "thumbnail": thumbnail, 
-            #       "author": author, 
-            #       "crawlDate": nowTS}
-            #item = l.load_item()
-            #item.crawlDate = nowTS
-            #yield item
+                                  updateDate=updateDate)
