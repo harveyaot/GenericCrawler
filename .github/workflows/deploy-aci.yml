@@ -67,7 +67,7 @@ jobs:
         restart-policy: OnFailure
         registry-username: ${{ secrets.ACR_USERNAME }}
         registry-password: ${{ secrets.ACR_PASSWORD }}
-        command: /bin/sh -c "cd reddit && scrapy crawl RedditSelectList"
+        command-line: sh -c "cd reddit && scrapy crawl RedditSelectList"
         name: ${{ env.RedditAzureInstanceName }}
         secure-environment-variables: MONGO_URI=${{ secrets.MONGO_URI }} MONGO_DATABASE=${{ secrets.MONGO_DATABASE }} MONGO_COLLECTION_NAME=${{ vars.MONGO_REDDIT_COLLECTION_NAME }}
         location: 'west us 2'
