@@ -68,6 +68,6 @@ jobs:
         registry-username: ${{ secrets.ACR_USERNAME }}
         registry-password: ${{ secrets.ACR_PASSWORD }}      
         name: ${{ env.RedditAzureInstanceName }}
-        command-line: /bin/bash -c "cd reddit && scrapy crawl RedditSelectList"
+        command-line: /bin/bash -c 'cd reddit && scrapy crawl RedditSelectList'
         secure-environment-variables: MONGO_URI=${{ secrets.MONGO_URI }} MONGO_DATABASE=${{ secrets.MONGO_DATABASE }} MONGO_COLLECTION_NAME=${{ vars.MONGO_REDDIT_COLLECTION_NAME }}
         location: 'west us 2'
