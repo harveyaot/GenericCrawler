@@ -7,6 +7,7 @@ on:
 env:
   DockerImageName: opinion_news_crawler
   AzureInstanceName: opinion-news-crawler
+  RedditAzureInstanceName: reddit-crawler
   
 jobs:
   build:
@@ -53,4 +54,20 @@ jobs:
         registry-password: ${{ secrets.ACR_PASSWORD }}
         name: opinion-news-crawler
         secure-environment-variables: MONGO_URI=${{ secrets.MONGO_URI }} MONGO_DATABASE=${{ secrets.MONGO_DATABASE }} MONGO_COLLECTION_NAME=${{ vars.MONGO_COLLECTION_NAME }} CMS_API_TOKEN=${{ secrets.CMS_API_TOKEN}} CMS_API=${{ vars.CMS_API }}
+        location: 'west us 2'
+    
+    - name: 'Deploy Reddit Spider to Azure Container Instances'
+      uses: 'azure/aci-deploy@v1'
+      with:
+        resource-group: Crawler
+        image: ${{ secrets.ACR_ENDPOINT }}/${{ env.DockerImageName }}:${{ steps.tag.outputs.tag }}
+        dns-name-label: ${{ env.RedditAzureInstanceName }}
+        cpu: 1   #Optional
+        memory: 0.5   #Optional
+        restart-policy: OnFailure
+        registry-username: ${{ secrets.ACR_USERNAME }}
+        registry-password: ${{ secrets.ACR_PASSWORD }}
+        command: /bin/sh -c "cd reddit && scrapy crawl RedditSelectList"
+        name: ${{ env.RedditAzureInstanceName }}
+        secure-environment-variables: MONGO_URI=${{ secrets.MONGO_URI }} MONGO_DATABASE=${{ secrets.MONGO_DATABASE }} MONGO_COLLECTION_NAME=${{ vars.MONGO_REDDIT_COLLECTION_NAME }}
         location: 'west us 2'
