@@ -39,7 +39,7 @@ class RedditMongoPipeline:
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
         # first check if insert before 
-        cache = self.db[self.collection_name].find_one({'post_id':adapter.get('post_id')}, {})
+        cache = self.db[self.collection_name].find_one({'post_id':adapter.get('post_id')}, {'post_id': 1, '_id': 0})
         # check if needed update
         if cache:
             self.db[self.collection_name].update_one({'post_id':adapter.get('post_id')}, {"$set": adapter.asdict()})
