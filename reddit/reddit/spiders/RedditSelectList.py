@@ -27,7 +27,7 @@ class RedditselectlistSpider(scrapy.Spider):
             if sort != 'new':
                 params['Sort'] = sort
                 crawl_url = f"{reddit_api}/{theme}?{params}" 
-                yield scrapy.Request(url=crawl_url, callback=self.parse, meta={'theme': 'theme', 'sort': sort})
+                yield scrapy.Request(url=crawl_url, callback=self.parse, meta={'theme': theme, 'sort': sort})
 
     def parse(self, response):
         # get response json
