@@ -62,6 +62,7 @@ class OpinionNewsMongoPipeline:
             if adapter.get('title') == title and adapter.get('author') == author and adapter.get('summary') == summary:
                 raise DropItem('duplicated one no need after pipeline to run')
             else:
+                
                 self.db[self.collection_name].update_one({'docid':adapter.get('docid')}, {"$set": adapter.asdict()})
                 adapter['need_update'] = True
         else: 
