@@ -25,13 +25,16 @@ class BloombergSpider(scrapy.Spider):
         now = datetime.datetime.now()
         nowTS = int(now.timestamp())
         
-        for article in response.xpath('//article[contains(@class, "story-list-story")]'):
+        for article in response.xpath('//article[contains(@class, "styles_article")]'):
             
-            title = article.xpath('.//div[contains(@class, "headline")]/a/text()').get()
-            summary = article.xpath('.//div[contains(@class, "summary")]/p/text()').get()
-            url = article.xpath('.//div[contains(@class, "headline")]/a/@href').get()
-            thumbnail = article.xpath('.//a[contains(@class, "image")]/img/@src').get()
-            author = article.xpath('.//span[contains(@class, "byline")]/text()').get()
+            title = article.xpath('.//div[contains(@data-component, "headline")]/a/text()').get()
+            # the legacy logic
+            #summary = article.xpath('.//div[contains(@class, "summary")]/p/text()').get()
+            #[TODO]
+            summary = ''
+            url = article.xpath('.//div[contains(@data-component, "headline")]/a/@href').get()
+            thumbnail = article.xpath('.//img[contains(@data-component, "image")]/@src').get()
+            author = article.xpath('.//div[contains(@data-component, "byline")]/span/text()').get()
             """
             url = response.xpath('//article[contains(@class, "article-story")]/div[contains(@class, "thumbnail")]/a/@href').getall()
 thumbnail = response.xpath('//article[contains(@class, "article-story")]/div[contains(@class, "thumbnail")]//img/@src').getall()
