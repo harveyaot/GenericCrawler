@@ -22,9 +22,18 @@ class BloombergSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
-        now = datetime.datetime.now()
+        now = datetime.datetime.now()   
         nowTS = int(now.timestamp())
-        
+
+        """
+        for article in response.xpath('//div[contains(@class, "styles_storyContainer")]'):
+            title = article.xpath('.//div[contains(@data-component, "headline")]/a/text()').get()
+            url = article.xpath('.//div[contains(@data-component, "headline")]/a/@href').get()
+            summary = article.xpath('.//section[contains(@data-component, "summary")]/text()').get()
+            imgs = article.xpath('.//img[contains(@data-component, "image")]/@srcset').get()
+            thumbnail = imgs.split(",")[0].split(" ")[0]
+            author = ''
+        """
         for article in response.xpath('//article[contains(@class, "styles_article")]'):
             
             title = article.xpath('.//div[contains(@data-component, "headline")]/a/text()').get()
@@ -33,14 +42,10 @@ class BloombergSpider(scrapy.Spider):
             #[TODO]
             summary = ''
             url = article.xpath('.//div[contains(@data-component, "headline")]/a/@href').get()
-            thumbnail = article.xpath('.//img[contains(@data-component, "image")]/@src').get()
+            imgs = article.xpath('.//img[contains(@data-component, "image")]/@srcset').get()
+            thumbnail = imgs.split(",")[0].split(" ")[0]
             author = article.xpath('.//div[contains(@data-component, "byline")]/span/text()').get()
-            """
-            url = response.xpath('//article[contains(@class, "article-story")]/div[contains(@class, "thumbnail")]/a/@href').getall()
-thumbnail = response.xpath('//article[contains(@class, "article-story")]/div[contains(@class, "thumbnail")]//img/@src').getall()
-
-title = response.xpath('//article[contains(@class, "article-story")]/div[contains(@class, "details")]//p/text()').getall()
-            """
+            
             yield OpinionNewsItem(title=title.strip('\n '), 
                                   summary=summary, 
                                   url=self.base_url + url, 
