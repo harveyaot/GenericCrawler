@@ -48,9 +48,7 @@ class OpinionNewsMongoPipeline:
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
-        nowTS = int(datetime.datetime.now())
-        adapter['updateDate'] = nowTS 
-
+        nowTS = int(datetime.datetime.now().timestamp())
         # first check if insert before 
         cache = self.db[self.collection_name].find_one({'docid':adapter.get('docid')}, {"title":1,"author":1,"summary":1})
 
@@ -64,7 +62,7 @@ class OpinionNewsMongoPipeline:
             if adapter.get('title') == title and adapter.get('author') == author and adapter.get('summary') == summary:
                 raise DropItem('duplicated one no need after pipeline to run')
             else:
-                
+                adapter['updateDate'] = nowTS 
                 self.db[self.collection_name].update_one({'docid':adapter.get('docid')}, {"$set": adapter.asdict()})
                 adapter['need_update'] = True
         else: 
