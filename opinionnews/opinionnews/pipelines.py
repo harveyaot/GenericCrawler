@@ -48,6 +48,8 @@ class OpinionNewsMongoPipeline:
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
+        nowTS = int(datetime.datetime.now())
+        adapter['updateDate'] = nowTS 
 
         # first check if insert before 
         cache = self.db[self.collection_name].find_one({'docid':adapter.get('docid')}, {"title":1,"author":1,"summary":1})
@@ -66,6 +68,8 @@ class OpinionNewsMongoPipeline:
                 self.db[self.collection_name].update_one({'docid':adapter.get('docid')}, {"$set": adapter.asdict()})
                 adapter['need_update'] = True
         else: 
+            # insert new one
+            adapter['firstDetectDate'] = nowTS
             self.db[self.collection_name].insert_one(adapter.asdict())
         return item
 
@@ -73,7 +77,7 @@ class OpinionNewsCMSPipeline:
 
     def __init__(self, api, api_token):
         self.api = api 
-        self.reqest_headers = {"Content-Type": "application/json","Authorization": f"Bearer {api_token}"}
+        self.request_headers = {"Content-Type": "application/json","Authorization": f"Bearer {api_token}"}
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -85,19 +89,21 @@ class OpinionNewsCMSPipeline:
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
         data = {'data': adapter.asdict()}
-        data['data']['updateDate'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        nowStr = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         # handle update cases
         if adapter.get('need_update'):
             docid = adapter.get('docid')
             try:
                 r = requests.get(self.api + f"?filters[docid][$eq]={docid}&fields[0]=id",
-                                  headers = self.reqest_headers)
+                                  headers = self.request_headers)
                 d = r.json()
                 cmsId = d['data'][0]['id']
-                requests.put(self.api + f"/{cmsId}", headers=self.reqest_headers, data=json.dumps(data))
+                data['data']['updateDate'] = nowStr
+                requests.put(self.api + f"/{cmsId}", headers=self.request_headers, data=json.dumps(data))
             except Exception as e:
                 print(e)
                 pass
         else:
-            requests.post(self.api, headers=self.reqest_headers, data=json.dumps(data))
+            data['data']['firstDetectDate'] = nowStr
+            requests.post(self.api, headers=self.request_headers, data=json.dumps(data))
         return item

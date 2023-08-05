@@ -19,6 +19,7 @@ class OpinionNewsItem(scrapy.Item):
     text = scrapy.Field()
     
     updateDate = scrapy.Field(serializer=int) 
+    firstDetectDate = scrapy.Field(serializer=int) 
     publishDate = scrapy.Field()
     
     # only for passing signals usage
