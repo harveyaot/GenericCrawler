@@ -102,6 +102,7 @@ class OpinionNewsCMSPipeline:
                 print(e)
                 pass
         else:
+            data['data']['updateDate'] = nowStr
             data['data']['firstDetectDate'] = nowStr
             requests.post(self.api, headers=self.request_headers, data=json.dumps(data))
         return item

@@ -14,7 +14,7 @@ logger.setLevel(logging.INFO)
 
 
 #spider_list = ['newsweek', 'foreignpolicy', 'bloomberg', 'scmp']
-spider_list = ["bloomberg"]
+spider_list = ["scmp"]
 
 def run_crawls():
     for spider in spider_list:
@@ -25,6 +25,15 @@ def run_crawls():
         )
         stats_crawl_results(spider, f"test_output/test_output_{spider}.json")
         # verify the results
+
+
+def run_pipelines():
+        for spider in spider_list:
+            proc = subprocess.run(
+                ["scrapy", "crawl", spider, "--overwrite-output", f"test_output/test_output_{spider}.json",
+                "-s", "ITEM_PIPELINES={'opinionnews.pipelines.OpinionnewsFilterPipeline': 300, 'opinionnews.pipelines.OpinionNewsCMSPipeline': 500,}"],
+                stderr=subprocess.PIPE
+            )
     
 
 def stats_crawl_results(spider, json_output):
@@ -42,6 +51,7 @@ def stats_crawl_results(spider, json_output):
         logger.info(f"Total items with  thumbnail: {len([item for item in items if item.get('thumbnail', None)])}")
         logger.info(f"Total items with  summary: {len([item for item in items if item.get('summary',None)])}")
         
-run_crawls()
+#run_crawls()
+run_pipelines()
     
 

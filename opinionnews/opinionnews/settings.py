@@ -7,6 +7,11 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import os
+import dotenv
+
+# if local.env file exist, load the environment variables
+if os.path.exists('local.env'):
+    dotenv.load_dotenv('local.env')
 
 BOT_NAME = 'opinionnews'
 
@@ -76,7 +81,7 @@ DEFAULT_REQUEST_HEADERS = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'opinionnews.pipelines.OpinionnewsFilterPipeline': 300,
-    'opinionnews.pipelines.OpinionNewsMongoPipeline': 400,
+    #'opinionnews.pipelines.OpinionNewsMongoPipeline': 400,
     'opinionnews.pipelines.OpinionNewsCMSPipeline': 500,
 }
 
