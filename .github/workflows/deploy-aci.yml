@@ -2,7 +2,12 @@ name: build docker and deploy to azure container instance
 
 on:
   push:
-    tags: ['v*.*.*']
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
 
 env:
   DockerImageName: opinion_news_crawler
@@ -35,7 +40,10 @@ jobs:
         build-args: |
           version=${{ steps.tag.outputs.tag }}
         tags: ${{ secrets.ACR_ENDPOINT }}/${{ env.DockerImageName }}:${{ steps.tag.outputs.tag }}
-     
+        
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
     - name: Login via Azure CLI
       uses: azure/login@v1
       with:
